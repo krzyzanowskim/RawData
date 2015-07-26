@@ -48,7 +48,7 @@ extension RawData: Indexable {
         return max(count - 1,0)
     }
     subscript (position: Index) -> _Element {
-        return 99
+        return (pointer + position).memory
     }
 }
 
@@ -59,8 +59,15 @@ extension RawData: SequenceType {
     typealias Generator = AnyGenerator<Element>
     
     func generate() -> Generator {
+        var idx = 0
         return anyGenerator {
-            return 98
+            let nextIdx = idx++
+            
+            if nextIdx > self.count - 1 {
+                return nil
+            }
+            
+            return self[nextIdx]
         }
     }
 }
