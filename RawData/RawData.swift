@@ -10,7 +10,9 @@ import Foundation
 
 class RawData: CustomStringConvertible {
     typealias Byte = UInt8
-    let pointer:UnsafeMutablePointer<Byte>
+    typealias Element = Byte
+    
+    let pointer:UnsafeMutablePointer<Element>
     let count:Int
     
     var description: String {
@@ -26,15 +28,39 @@ class RawData: CustomStringConvertible {
         pointer.dealloc(count)
     }
     
-    func bytes() {
-        
-    }
-    
     private func toHex() -> String {
         var hex = String()
         for var idx = 0; idx < count; ++idx {
             hex += String(format:"%02x", (pointer + idx).memory)
         }
         return hex
+    }
+}
+
+extension RawData: Indexable {
+    typealias Index = Int
+    
+    typealias _Element = Element
+    var startIndex: Index {
+        return 0
+    }
+    var endIndex: Index {
+        return max(count - 1,0)
+    }
+    subscript (position: Index) -> _Element {
+        return 99
+    }
+}
+
+extension RawData: CollectionType {
+}
+
+extension RawData: SequenceType {
+    typealias Generator = AnyGenerator<Element>
+    
+    func generate() -> Generator {
+        return anyGenerator {
+            return 98
+        }
     }
 }
