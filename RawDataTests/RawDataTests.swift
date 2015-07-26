@@ -21,9 +21,9 @@ class RawDataTests: XCTestCase {
         super.tearDown()
     }
     
-    func testExample() {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
+    func testAlloc() {
+        let data = RawData(count: 5)
+        
     }
     
     func testPerformanceExample() {

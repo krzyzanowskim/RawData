@@ -10,6 +10,7 @@
 		757F4F551B6526FF0023AE96 /* RawData.h in Headers */ = {isa = PBXBuildFile; fileRef = 757F4F541B6526FF0023AE96 /* RawData.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		757F4F5C1B6527000023AE96 /* RawData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 757F4F511B6526FF0023AE96 /* RawData.framework */; };
 		757F4F611B6527000023AE96 /* RawDataTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 757F4F601B6527000023AE96 /* RawDataTests.swift */; };
+		757F4F6C1B6527110023AE96 /* RawData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 757F4F6B1B6527110023AE96 /* RawData.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -29,6 +30,7 @@
 		757F4F5B1B6527000023AE96 /* RawDataTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RawDataTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		757F4F601B6527000023AE96 /* RawDataTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RawDataTests.swift; sourceTree = "<group>"; };
 		757F4F621B6527000023AE96 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		757F4F6B1B6527110023AE96 /* RawData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RawData.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -72,6 +74,7 @@
 			isa = PBXGroup;
 			children = (
 				757F4F541B6526FF0023AE96 /* RawData.h */,
+				757F4F6B1B6527110023AE96 /* RawData.swift */,
 				757F4F561B6526FF0023AE96 /* Info.plist */,
 			);
 			path = RawData;
@@ -142,6 +145,7 @@
 		757F4F481B6526FF0023AE96 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				LastSwiftUpdateCheck = 0700;
 				LastUpgradeCheck = 0700;
 				ORGANIZATIONNAME = "Marcin Krzyżanowski";
 				TargetAttributes = {
@@ -193,6 +197,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				757F4F6C1B6527110023AE96 /* RawData.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -307,6 +312,7 @@
 		757F4F661B6527000023AE96 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
@@ -317,12 +323,14 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.krzyzanowskim.RawData;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
 		};
 		757F4F671B6527000023AE96 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
