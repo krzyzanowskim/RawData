@@ -40,23 +40,17 @@ class RawData: CustomStringConvertible {
 extension RawData: Indexable {
     typealias Index = Int
     
-    typealias _Element = Element
     var startIndex: Index {
         return 0
     }
+    
     var endIndex: Index {
         return max(count - 1,0)
     }
-    subscript (position: Index) -> _Element {
-        return (pointer + position).memory
-    }
-}
-
-extension RawData: CollectionType {
 }
 
 extension RawData: SequenceType {
-    typealias Generator = AnyGenerator<Element>
+    typealias Generator = AnyGenerator<Byte>
     
     func generate() -> Generator {
         var idx = 0
@@ -68,6 +62,22 @@ extension RawData: SequenceType {
             }
             
             return self[nextIdx]
+        }
+    }
+}
+
+extension RawData: MutableCollectionType {
+    subscript (position: Index) -> Generator.Element {
+        get {
+            if position < count {
+                return (pointer + position).memory
+            }
+            return 0
+        }
+        set(newValue) {
+            if position < count {
+                (pointer + position).memory = newValue
+            }
         }
     }
 }
