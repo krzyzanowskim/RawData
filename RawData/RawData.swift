@@ -63,7 +63,8 @@ extension RawData: SequenceType {
         return anyGenerator {
             let nextIdx = idx++
             
-            if nextIdx > self.count - 1 {
+            
+            if nextIdx > self.endIndex - 1 {
                 return nil
             }
             
@@ -75,15 +76,18 @@ extension RawData: SequenceType {
 extension RawData: MutableCollectionType, RangeReplaceableCollectionType {
     subscript (position: Index) -> Generator.Element {
         get {
-            if position < endIndex {
-                return (pointer + position).memory
+            if position >= endIndex {
+                fatalError("index out of range")
             }
-            return 0
+            
+            return (pointer + position).memory
         }
         set(newValue) {
-            if position < endIndex {
-                (pointer + position).memory = newValue
+            if position >= endIndex {
+                fatalError("index out of range")
             }
+            
+            (pointer + position).memory = newValue
         }
     }
     
