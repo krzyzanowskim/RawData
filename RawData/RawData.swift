@@ -19,6 +19,11 @@ class RawData: CustomStringConvertible {
         return "<\(toHex())>"
     }
     
+    required init() {
+        self.pointer = UnsafeMutablePointer.alloc(0)
+        self.count = 0
+    }
+    
     init(count: Int) {
         self.pointer = UnsafeMutablePointer.alloc(count)
         self.count = count
@@ -45,7 +50,8 @@ extension RawData: Indexable {
     }
     
     var endIndex: Index {
-        return max(count - 1,0)
+        // The collection's "past the end" position.
+        return max(count,1)
     }
 }
 
@@ -66,18 +72,30 @@ extension RawData: SequenceType {
     }
 }
 
-extension RawData: MutableCollectionType {
+extension RawData: MutableCollectionType, RangeReplaceableCollectionType {
     subscript (position: Index) -> Generator.Element {
         get {
-            if position < count {
+            if position < endIndex {
                 return (pointer + position).memory
             }
             return 0
         }
         set(newValue) {
-            if position < count {
+            if position < endIndex {
                 (pointer + position).memory = newValue
             }
+        }
+    }
+    
+    func replaceRange<C : CollectionType where C.Generator.Element == Generator.Element>(subRange: Range<Index>, with newElements: C) {
+        var generator = newElements.generate()
+        for var idx = subRange.startIndex; idx < subRange.endIndex - 1; idx++ {
+            
+            guard let nextElement = generator.next() else {
+                break
+            }
+            
+            (pointer + idx).memory = nextElement
         }
     }
 }
