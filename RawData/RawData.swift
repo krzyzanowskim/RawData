@@ -8,7 +8,7 @@
 
 import Foundation
 
-class RawData: CustomStringConvertible {
+class RawData: CustomStringConvertible, ArrayLiteralConvertible {
     typealias Byte = UInt8
     typealias Element = Byte
     
@@ -20,13 +20,22 @@ class RawData: CustomStringConvertible {
     }
     
     required init() {
-        self.pointer = UnsafeMutablePointer.alloc(0)
         self.count = 0
+        self.pointer = UnsafeMutablePointer.alloc(count)
     }
     
-    init(count: Int) {
-        self.pointer = UnsafeMutablePointer.alloc(count)
+    required init(count: Int) {
         self.count = count
+        self.pointer = UnsafeMutablePointer.alloc(count)
+    }
+    
+    required init(arrayLiteral elements: Element...) {
+        self.pointer = UnsafeMutablePointer.alloc(elements.count)
+        self.count = elements.count
+        
+        for (idx, element) in elements.enumerate() {
+            (pointer + idx).memory = element
+        }
     }
     
     deinit {
