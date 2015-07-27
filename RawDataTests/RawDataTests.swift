@@ -19,13 +19,10 @@ class RawDataTests: XCTestCase {
         super.tearDown()
     }
     
-    func test() {
+    func testInit() {
         let data = RawData(count: 5)
         XCTAssert(data.count == 5, "Invalid count")
         XCTAssert(data[0] == 0, "Invalid first value")
-        
-        data[0] = 1
-        XCTAssertTrue(data[0] == 1)
     }
     
     func testArrayLiteralConvertible() {
@@ -43,4 +40,17 @@ class RawDataTests: XCTestCase {
         XCTAssertTrue(([1,2] as RawData).description == "<0102>")
         XCTAssertTrue(([] as RawData).description == "<>")
     }
+    
+    func testReplace() {
+        let data:RawData = [1,2,3,4]
+        data[0] = 9
+        XCTAssertTrue(data[0] == 9)
+    }
+    
+    func testRangeReplaceableCollectionType() {
+        let data:RawData = [1,2,3,4,5,6,7,8,9,10]
+        data.replaceRange(0...3, with: [10,9,8])
+        XCTAssertTrue(data[0] == 10 && data[1] == 9 && data[2] == 8 && data[3] == 4)
+    }
+
 }

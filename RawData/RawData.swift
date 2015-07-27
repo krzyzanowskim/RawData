@@ -23,6 +23,10 @@ class RawData: CustomStringConvertible, ArrayLiteralConvertible, IntegerLiteralC
         return "<\(hex)>"
     }
     
+    var hex: String {
+        return toHex()
+    }
+    
     required init() {
         count = 0
         pointer = UnsafeMutablePointer.alloc(count)
