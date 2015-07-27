@@ -8,7 +8,7 @@
 
 import Foundation
 
-class RawData: CustomStringConvertible, ArrayLiteralConvertible {
+class RawData: CustomStringConvertible, ArrayLiteralConvertible, IntegerLiteralConvertible {
     typealias Byte = UInt8
     typealias Element = Byte
     
@@ -16,17 +16,21 @@ class RawData: CustomStringConvertible, ArrayLiteralConvertible {
     let count:Int
     
     var description: String {
-        return "<\(toHex())>"
+        var hex = toHex()
+        for (i,j) in stride(from: 8, to: hex.utf8.count, by: 8).enumerate() {
+            hex.insert(Character(" "), atIndex: advance(advance(hex.startIndex, j),i))
+        }
+        return "<\(hex)>"
     }
     
     required init() {
-        self.count = 0
-        self.pointer = UnsafeMutablePointer.alloc(count)
+        count = 0
+        pointer = UnsafeMutablePointer.alloc(count)
     }
     
     required init(count: Int) {
         self.count = count
-        self.pointer = UnsafeMutablePointer.alloc(count)
+        pointer = UnsafeMutablePointer.alloc(count)
     }
     
     required init(arrayLiteral elements: Element...) {
@@ -36,6 +40,12 @@ class RawData: CustomStringConvertible, ArrayLiteralConvertible {
         for (idx, element) in elements.enumerate() {
             (pointer + idx).memory = element
         }
+    }
+    
+    required init(integerLiteral value: UInt8) {
+        count = 1
+        pointer = UnsafeMutablePointer.alloc(count)
+        pointer.memory = value
     }
     
     deinit {
