@@ -8,12 +8,26 @@
 
 import Foundation
 
+private struct Pointer<T> {
+    let pointer:UnsafeMutablePointer<T>
+    let count:Int
+    
+    init (count: Int) {
+        self.count = count
+        self.pointer = UnsafeMutablePointer<T>.alloc(count)
+    }
+
+    func dealloc() {
+        pointer.dealloc(count)
+        pointer.destroy()
+    }
+}
+
 class RawData: CustomStringConvertible, ArrayLiteralConvertible, IntegerLiteralConvertible {
     typealias Byte = UInt8
     typealias Element = Byte
     
-    let pointer:UnsafeMutablePointer<Element>
-    let count:Int
+    private let ref:Pointer<Element>
     
     var description: String {
         var hex = toHex()
@@ -28,38 +42,33 @@ class RawData: CustomStringConvertible, ArrayLiteralConvertible, IntegerLiteralC
     }
     
     required init() {
-        count = 0
-        pointer = UnsafeMutablePointer.alloc(count)
+        ref = Pointer<Element>(count: 0)
     }
     
     required init(count: Int) {
-        self.count = count
-        pointer = UnsafeMutablePointer.alloc(count)
+        ref = Pointer<Element>(count: count)
     }
     
     required init(arrayLiteral elements: Element...) {
-        self.pointer = UnsafeMutablePointer.alloc(elements.count)
-        self.count = elements.count
-        
+        ref = Pointer<Element>(count: elements.count)
         for (idx, element) in elements.enumerate() {
-            (pointer + idx).memory = element
+            (ref.pointer + idx).memory = element
         }
     }
     
     required init(integerLiteral value: UInt8) {
-        count = 1
-        pointer = UnsafeMutablePointer.alloc(count)
-        pointer.memory = value
+        ref = Pointer<Element>(count: 1)
+        ref.pointer.memory = value
     }
     
     deinit {
-        pointer.dealloc(count)
+        ref.dealloc()
     }
     
     private func toHex() -> String {
         var hex = String()
         for var idx = 0; idx < count; ++idx {
-            hex += String(format:"%02x", (pointer + idx).memory)
+            hex += String(format:"%02x", (ref.pointer + idx).memory)
         }
         return hex
     }
@@ -74,7 +83,7 @@ extension RawData: Indexable {
     
     var endIndex: Index {
         // The collection's "past the end" position.
-        return max(count,1)
+        return ref.count == 0 ? 0 : max(ref.count,1)
     }
 }
 
@@ -103,14 +112,14 @@ extension RawData: MutableCollectionType, RangeReplaceableCollectionType {
                 fatalError("index out of range")
             }
             
-            return (pointer + position).memory
+            return (ref.pointer + position).memory
         }
         set(newValue) {
             if position >= endIndex {
                 fatalError("index out of range")
             }
             
-            (pointer + position).memory = newValue
+            (ref.pointer + position).memory = newValue
         }
     }
     
@@ -122,7 +131,7 @@ extension RawData: MutableCollectionType, RangeReplaceableCollectionType {
                 break
             }
             
-            (pointer + idx).memory = nextElement
+            (ref.pointer + idx).memory = nextElement
         }
     }
 }

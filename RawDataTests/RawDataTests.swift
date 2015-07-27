@@ -52,5 +52,14 @@ class RawDataTests: XCTestCase {
         data.replaceRange(0...3, with: [10,9,8])
         XCTAssertTrue(data[0] == 10 && data[1] == 9 && data[2] == 8 && data[3] == 4)
     }
-
+    
+    func testCount() {
+        let data:RawData = [1,2,3]
+        XCTAssertTrue(data.count == 3)
+        XCTAssertEqual(data.endIndex, 3)
+        
+        let dataEmpty:RawData = []
+        XCTAssertEqual(dataEmpty.count, 0)
+        XCTAssertEqual(dataEmpty.endIndex, 0)
+    }
 }
