@@ -30,7 +30,7 @@ class RawData: CustomStringConvertible, ArrayLiteralConvertible, IntegerLiteralC
     private let ref:Pointer<Element>
     
     var description: String {
-        var hex = toHex()
+        var hex = self.hex
         for (i,j) in stride(from: 8, to: hex.utf8.count, by: 8).enumerate() {
             hex.insert(Character(" "), atIndex: advance(advance(hex.startIndex, j),i))
         }
@@ -38,7 +38,11 @@ class RawData: CustomStringConvertible, ArrayLiteralConvertible, IntegerLiteralC
     }
     
     var hex: String {
-        return toHex()
+        var str = String()
+        for var idx = 0; idx < count; ++idx {
+            str += String(format:"%02x", (ref.pointer + idx).memory)
+        }
+        return str
     }
     
     required init() {
@@ -63,14 +67,6 @@ class RawData: CustomStringConvertible, ArrayLiteralConvertible, IntegerLiteralC
     
     deinit {
         ref.dealloc()
-    }
-    
-    private func toHex() -> String {
-        var hex = String()
-        for var idx = 0; idx < count; ++idx {
-            hex += String(format:"%02x", (ref.pointer + idx).memory)
-        }
-        return hex
     }
 }
 
