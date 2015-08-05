@@ -23,11 +23,18 @@ class RawDataTests: XCTestCase {
         let data = RawData(count: 5)
         XCTAssert(data.count == 5, "Invalid count")
         XCTAssert(data[0] == 0, "Invalid first value")
+        XCTAssert(data[4] == 0, "Invalid first value")
     }
     
     func testArrayLiteralConvertible() {
         let data:RawData = [1,2,3]
         XCTAssertTrue(data[0] == 1 && data[1] == 2 && data[2] == 3)
+    }
+    
+    func testArray() {
+        let data: RawData = [1,2,3]
+        let arr = Array(data)
+        XCTAssertTrue(arr[0] == 1 && arr[1] == 2 && arr[2] == 3)
     }
     
     func testIntegerLiteralConvertible() {

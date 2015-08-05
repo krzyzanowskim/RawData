@@ -8,28 +8,31 @@
 
 import Foundation
 
-private struct Pointer<T> {
-    let pointer:UnsafeMutablePointer<T>
-    let count:Int
+private struct Pointer<T: IntegerLiteralConvertible> {
+    private let pointer:UnsafeMutablePointer<T>
+    private let count:Int
     
     init (count: Int) {
         self.count = count
         self.pointer = UnsafeMutablePointer<T>.alloc(count)
+        for i in 0..<count {
+            (self.pointer+i).initialize(0)
+        }
     }
 
     func dealloc() {
         pointer.dealloc(count)
-        pointer.destroy()
+        pointer.destroy(count)
     }
 }
 
-class RawData: CustomStringConvertible, ArrayLiteralConvertible, IntegerLiteralConvertible {
-    typealias Byte = UInt8
-    typealias Element = Byte
+public class RawData: CustomStringConvertible, ArrayLiteralConvertible, IntegerLiteralConvertible {
+    public typealias Byte = UInt8
+    public typealias Element = Byte // Byte
     
     private let ref:Pointer<Element>
     
-    var description: String {
+    public var description: String {
         var hex = self.hex
         for (i,j) in stride(from: 8, to: hex.utf8.count, by: 8).enumerate() {
             hex.insert(Character(" "), atIndex: advance(advance(hex.startIndex, j),i))
@@ -37,7 +40,7 @@ class RawData: CustomStringConvertible, ArrayLiteralConvertible, IntegerLiteralC
         return "<\(hex)>"
     }
     
-    var hex: String {
+    public var hex: String {
         var str = String()
         for var idx = 0; idx < count; ++idx {
             str += String(format:"%02x", (ref.pointer + idx).memory)
@@ -45,22 +48,22 @@ class RawData: CustomStringConvertible, ArrayLiteralConvertible, IntegerLiteralC
         return str
     }
     
-    required init() {
+    public required init() {
         ref = Pointer<Element>(count: 0)
     }
     
-    required init(count: Int) {
+    public required init(count: Int) {
         ref = Pointer<Element>(count: count)
     }
     
-    required init(arrayLiteral elements: Element...) {
+    public required init(arrayLiteral elements: Element...) {
         ref = Pointer<Element>(count: elements.count)
         for (idx, element) in elements.enumerate() {
             (ref.pointer + idx).memory = element
         }
     }
     
-    required init(integerLiteral value: UInt8) {
+    public required init(integerLiteral value: UInt8) {
         ref = Pointer<Element>(count: 1)
         ref.pointer.memory = value
     }
@@ -71,22 +74,22 @@ class RawData: CustomStringConvertible, ArrayLiteralConvertible, IntegerLiteralC
 }
 
 extension RawData: Indexable {
-    typealias Index = Int
+    public typealias Index = Int
     
-    var startIndex: Index {
+    public var startIndex: Index {
         return 0
     }
     
-    var endIndex: Index {
+    public var endIndex: Index {
         // The collection's "past the end" position.
         return ref.count == 0 ? 0 : max(ref.count,1)
     }
 }
 
 extension RawData: SequenceType {
-    typealias Generator = AnyGenerator<Byte>
+    public typealias Generator = AnyGenerator<Byte>
     
-    func generate() -> Generator {
+    public func generate() -> Generator {
         var idx = 0
         return anyGenerator {
             let nextIdx = idx++
@@ -102,7 +105,7 @@ extension RawData: SequenceType {
 }
 
 extension RawData: MutableCollectionType, RangeReplaceableCollectionType {
-    subscript (position: Index) -> Generator.Element {
+    public subscript (position: Index) -> Generator.Element {
         get {
             if position >= endIndex {
                 fatalError("index out of range")
@@ -119,7 +122,7 @@ extension RawData: MutableCollectionType, RangeReplaceableCollectionType {
         }
     }
     
-    func replaceRange<C : CollectionType where C.Generator.Element == Generator.Element>(subRange: Range<Index>, with newElements: C) {
+    public func replaceRange<C : CollectionType where C.Generator.Element == Generator.Element>(subRange: Range<Index>, with newElements: C) {
         var generator = newElements.generate()
         for var idx = subRange.startIndex; idx < subRange.endIndex - 1; idx++ {
             
