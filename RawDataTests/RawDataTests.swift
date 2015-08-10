@@ -69,4 +69,10 @@ class RawDataTests: XCTestCase {
         XCTAssertEqual(dataEmpty.count, 0)
         XCTAssertEqual(dataEmpty.endIndex, 0)
     }
+    
+    func testCopy() {
+        let data:RawData = [1,2,3]
+        let copy = RawData(data)
+        XCTAssertTrue(data == copy)
+    }
 }
