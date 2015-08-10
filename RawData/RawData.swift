@@ -19,7 +19,7 @@ private struct Pointer<T: IntegerLiteralConvertible> {
     
     init(_ source: UnsafeMutablePointer<T>, count: Int) {
         self.init(count: count)
-        self.pointer.assignFrom(source, count: count)
+        self.pointer.initializeFrom(source, count: count)
     }
     
     private func dealloc() {
@@ -44,7 +44,7 @@ public class RawData: CustomStringConvertible, ArrayLiteralConvertible, IntegerL
     
     public var hex: String {
         var str = String()
-        for var idx = 0; idx < count; ++idx {
+        for var idx = 0; idx < ref.count; ++idx {
             str += String(format:"%02x", (ref.pointer + idx).memory)
         }
         return str
@@ -54,7 +54,7 @@ public class RawData: CustomStringConvertible, ArrayLiteralConvertible, IntegerL
         ref = Pointer<Element>(count: 0)
     }
     
-    public required init(count: Int) {
+    public required init(_ count: Int) {
         ref = Pointer<Element>(count: count)
     }
     
@@ -78,8 +78,9 @@ public class RawData: CustomStringConvertible, ArrayLiteralConvertible, IntegerL
         ref.dealloc()
     }
     
-//    func copy() -> Self {
-//    }
+    public func copy() -> RawData {
+        return RawData(self)
+    }
 }
 
 extension RawData: Indexable {
