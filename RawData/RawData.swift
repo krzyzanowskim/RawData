@@ -62,6 +62,11 @@ public class RawData: CustomStringConvertible, ArrayLiteralConvertible, IntegerL
         ref = Pointer<Element>(source.ref.pointer, count: source.ref.count)
     }
     
+    public required init<C : CollectionType where C.Generator.Element == Element, C.Index == Int>(_ source: C) {
+        ref = Pointer<Element>(count: source.count)
+        ref.pointer.initializeFrom(source)
+    }
+    
     public required init(arrayLiteral elements: Element...) {
         ref = Pointer<Element>(count: elements.count)
         for (idx, element) in elements.enumerate() {
@@ -213,5 +218,17 @@ public func >>(lhs: RawData, rhs: Int) -> RawData {
         }
     }
     print(result)
+    return result
+}
+
+public func |(lhs: RawData, rhs: RawData) -> RawData {
+    let result = RawData(lhs.count)
+    for var i = 0; i < result.count; i++ {
+        if lhs[i] > 0 {
+            result[i] = lhs[i]
+        } else if rhs[i] > 0 {
+            result[i] = rhs[i]
+        }
+    }
     return result
 }

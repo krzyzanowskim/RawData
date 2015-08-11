@@ -26,6 +26,11 @@ class RawDataTests: XCTestCase {
         XCTAssert(data[4] == 0, "Invalid first value")
     }
     
+    func testInitFromArray() {
+        let arr:[UInt8] = [1,2,3,4,5,6]
+        XCTAssertTrue(RawData(arr) == RawData([1,2,3,4,5,6]))
+    }
+    
     func testArrayLiteralConvertible() {
         let data:RawData = [1,2,3]
         XCTAssertTrue(data[0] == 1 && data[1] == 2 && data[2] == 3)
@@ -90,4 +95,9 @@ class RawDataTests: XCTestCase {
         XCTAssertFalse(shifted == RawData([0,0,0,0,0,0,1,2]))
     }
 
+    func testOr() {
+        let data1:RawData = [0,0,0,0,5,6,7,8]
+        let data2:RawData = [1,2,3,4,0,0,0,0]
+        XCTAssertTrue(data1 | data2 == RawData([1,2,3,4,5,6,7,8]))
+    }
 }
