@@ -28,7 +28,7 @@ private struct Pointer<T: IntegerLiteralConvertible> {
     }
 }
 
-public class RawData: CustomStringConvertible, ArrayLiteralConvertible, IntegerLiteralConvertible {
+public final class RawData: CustomStringConvertible, ArrayLiteralConvertible, IntegerLiteralConvertible {
     public typealias Byte = UInt8
     public typealias Element = Byte // Byte
     
@@ -146,7 +146,12 @@ extension RawData: MutableCollectionType, RangeReplaceableCollectionType {
     }
 }
 
-extension RawData: Equatable {
+extension RawData: Equatable, Hashable {
+    
+    public var hashValue: Int {
+        return Int(elf_hash(80))
+    }
+    
     // http://eternallyconfuzzled.com/tuts/algorithms/jsw_tut_hashing.aspx#elf
     private func elf_hash(len: UInt32) -> UInt32 {
         var h:UInt32 = 0, g:UInt32 = 0
@@ -217,7 +222,6 @@ public func >>(lhs: RawData, rhs: Int) -> RawData {
             result[i+rhs] = lhs[i]
         }
     }
-    print(result)
     return result
 }
 
