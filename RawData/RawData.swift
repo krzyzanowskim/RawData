@@ -77,10 +77,6 @@ public class RawData: CustomStringConvertible, ArrayLiteralConvertible, IntegerL
     deinit {
         ref.dealloc()
     }
-    
-    public func copy() -> RawData {
-        return RawData(self)
-    }
 }
 
 extension RawData: Indexable {
@@ -155,7 +151,7 @@ extension RawData: Equatable {
             if g != 0 {
                 h ^= g >> 24
             }
-            h &= g >> 24
+            h &= ~g
         }
         return h
     }
@@ -164,4 +160,58 @@ extension RawData: Equatable {
 public func ==(lhs: RawData, rhs: RawData) -> Bool {
     // CFHashCode check 80 bytes with ELF hash, so here we go
     return lhs.elf_hash(min(UInt32(lhs.count),80)) == rhs.elf_hash(min(UInt32(rhs.count),80))
+}
+
+protocol Copying {
+    typealias CopyElement
+    func copy() -> CopyElement
+}
+
+extension RawData: Copying {
+    func copy() -> RawData {
+        return RawData(self)
+    }
+}
+
+extension Array where Element: RawData {
+    func copy() -> Array<Element> {
+        var result = [Element]()
+        result.reserveCapacity(count)
+        for data in self {
+            result.append(data.copy() as! Element)
+        }
+        return result
+    }
+}
+
+// Shift operators
+public func <<(lhs: RawData, rhs: Int) -> RawData {
+    if rhs > lhs.count {
+        fatalError("shift amount is larger than type size in bytes")
+    }
+    
+    let result = RawData(lhs.count)
+    for var i = 0; i < result.count; i++ {
+        if (i + rhs) < lhs.count {
+            result[i] = lhs[i+rhs]
+        } else {
+            result[i] = 0
+        }
+    }
+    return result
+}
+
+public func >>(lhs: RawData, rhs: Int) -> RawData {
+    if rhs > lhs.count {
+        fatalError("shift amount is larger than type size in bytes")
+    }
+    
+    let result = RawData(lhs.count)
+    for var i = 0; i < result.count; i++ {
+        if (i + rhs) < lhs.count {
+            result[i+rhs] = lhs[i]
+        }
+    }
+    print(result)
+    return result
 }

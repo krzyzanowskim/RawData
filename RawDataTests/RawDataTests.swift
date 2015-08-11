@@ -20,7 +20,7 @@ class RawDataTests: XCTestCase {
     }
     
     func testInit() {
-        let data = RawData(count: 5)
+        let data = RawData(5)
         XCTAssert(data.count == 5, "Invalid count")
         XCTAssert(data[0] == 0, "Invalid first value")
         XCTAssert(data[4] == 0, "Invalid first value")
@@ -75,4 +75,19 @@ class RawDataTests: XCTestCase {
         let copy = RawData(data)
         XCTAssertTrue(data == copy)
     }
+    
+    func testShiftLeft() {
+        let data:RawData = [1,2,3,4,5,6,7,8]
+        let shifted = data << 5
+        XCTAssertTrue(shifted == RawData([6,7,8,0,0,0,0,0]))
+        XCTAssertFalse(shifted == RawData([7,8,0,0,0,0,0,0]))
+    }
+    
+    func testShiftRight() {
+        let data:RawData = [1,2,3,4,5,6,7,8]
+        let shifted = data >> 5
+        XCTAssertTrue(shifted == RawData([0,0,0,0,0,1,2,3]))
+        XCTAssertFalse(shifted == RawData([0,0,0,0,0,0,1,2]))
+    }
+
 }
