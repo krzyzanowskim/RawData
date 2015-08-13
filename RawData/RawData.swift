@@ -120,7 +120,7 @@ extension RawData: SequenceType {
     }
 }
 
-extension RawData: MutableCollectionType, RangeReplaceableCollectionType {
+extension RawData: MutableCollectionType {
     public subscript (position: Index) -> Generator.Element {
         get {
             if position >= endIndex {
@@ -137,7 +137,9 @@ extension RawData: MutableCollectionType, RangeReplaceableCollectionType {
             (ref.pointer + position).memory = newValue
         }
     }
-    
+}
+
+extension RawData: RangeReplaceableCollectionType {
     public func replaceRange<C : CollectionType where C.Generator.Element == Generator.Element>(subRange: Range<Index>, with newElements: C) {
         var generator = newElements.generate()
         for var idx = subRange.startIndex; idx < subRange.endIndex - 1; idx++ {
@@ -153,13 +155,27 @@ extension RawData: MutableCollectionType, RangeReplaceableCollectionType {
     public func append(x: Generator.Element) {
         ref.reallocMemory(count + 1)
         (ref.pointer + count - 1).memory = x
-//        ref.pointer = UnsafeMutablePointer(realloc(ref.pointer, count + 1))
-//        let newRef = Pointer<Element>(count: count + 1)
-//        // copy values
-//        newRef.pointer.initializeFrom(ref.pointer, count: ref.count)
-//        (newRef.pointer + count).memory = x
-//        ref = newRef
     }
+    
+    public func extend<S : SequenceType where S.Generator.Element == Generator.Element>(newElements: S) {
+        ref.reallocMemory(count + newElements.underestimateCount())
+        for (i,x) in newElements.enumerate() {
+            (ref.pointer + count - newElements.underestimateCount() + i).memory = x
+        }
+    }
+
+    public func reserveCapacity(n: Index.Distance) {
+        fatalError("Not implemented")
+    }
+    
+    public func insert(newElement: Generator.Element, atIndex i: Index) {
+        fatalError("Not implemented")
+    }
+    
+    public func removeAll(keepCapacity keepCapacity: Bool) {
+        fatalError("Not implemented")
+    }
+
 }
 
 extension RawData: Equatable, Hashable {

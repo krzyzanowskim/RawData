@@ -107,4 +107,11 @@ class RawDataTests: XCTestCase {
         data1.append(1)
         XCTAssertTrue(data1 == data2)
     }
+    
+    func testExtend() {
+        let data1:RawData = [1,2,3]
+        let data2:RawData = [1,2,3,4,5,6]
+        data1.extend(RawData([4,5,6]))
+        XCTAssertTrue(data1 == data2)
+    }
 }
