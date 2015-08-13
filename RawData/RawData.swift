@@ -9,8 +9,8 @@
 import Foundation
 
 private struct Pointer<T: IntegerLiteralConvertible> {
-    private let pointer:UnsafeMutablePointer<T>
-    private let count:Int
+    private var pointer:UnsafeMutablePointer<T>
+    private var count:Int
     
     init (count: Int) {
         self.count = count
@@ -26,13 +26,18 @@ private struct Pointer<T: IntegerLiteralConvertible> {
         pointer.destroy(count)
         pointer.dealloc(count)
     }
+    
+    mutating func reallocMemory(newSize: Int) {
+        self.pointer = UnsafeMutablePointer<T>(realloc(pointer, newSize))
+        self.count = newSize
+    }
 }
 
 public final class RawData: CustomStringConvertible, ArrayLiteralConvertible, IntegerLiteralConvertible {
     public typealias Byte = UInt8
     public typealias Element = Byte // Byte
     
-    private let ref:Pointer<Element>
+    private var ref:Pointer<Element>
     
     public var description: String {
         var hex = self.hex
@@ -143,6 +148,17 @@ extension RawData: MutableCollectionType, RangeReplaceableCollectionType {
             
             (ref.pointer + idx).memory = nextElement
         }
+    }
+    
+    public func append(x: Generator.Element) {
+        ref.reallocMemory(count + 1)
+        (ref.pointer + count - 1).memory = x
+//        ref.pointer = UnsafeMutablePointer(realloc(ref.pointer, count + 1))
+//        let newRef = Pointer<Element>(count: count + 1)
+//        // copy values
+//        newRef.pointer.initializeFrom(ref.pointer, count: ref.count)
+//        (newRef.pointer + count).memory = x
+//        ref = newRef
     }
 }
 

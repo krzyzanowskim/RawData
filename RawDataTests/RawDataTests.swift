@@ -100,4 +100,11 @@ class RawDataTests: XCTestCase {
         let data2:RawData = [1,2,3,4,0,0,0,0]
         XCTAssertTrue(data1 | data2 == RawData([1,2,3,4,5,6,7,8]))
     }
+    
+    func testAppend() {
+        let data1:RawData = [1,2,3]
+        let data2:RawData = [1,2,3,1]
+        data1.append(1)
+        XCTAssertTrue(data1 == data2)
+    }
 }
