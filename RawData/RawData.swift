@@ -182,7 +182,7 @@ extension RawData: RangeReplaceableCollectionType {
 extension RawData: Equatable, Hashable {
     
     public var hashValue: Int {
-        return Int(elf_hash(80))
+        return Int(elf_hash(min(80,UInt32(count)))) // CFHashCode check 80 bytes with ELF hash, so here we go
     }
     
     // http://eternallyconfuzzled.com/tuts/algorithms/jsw_tut_hashing.aspx#elf
@@ -201,8 +201,15 @@ extension RawData: Equatable, Hashable {
 }
 
 public func ==(lhs: RawData, rhs: RawData) -> Bool {
-    // CFHashCode check 80 bytes with ELF hash, so here we go
-    return lhs.elf_hash(min(UInt32(lhs.count),80)) == rhs.elf_hash(min(UInt32(rhs.count),80))
+    if lhs.ref.pointer == rhs.ref.pointer {
+        return true
+    }
+    
+    if lhs.hashValue == rhs.hashValue {
+        return true
+    }
+    
+    return false
 }
 
 protocol Copying {
