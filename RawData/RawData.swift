@@ -41,8 +41,9 @@ public final class RawData: CustomStringConvertible, ArrayLiteralConvertible, In
     
     public var description: String {
         var hex = self.hex
-        for (i,j) in stride(from: 8, to: hex.utf8.count, by: 8).enumerate() {
-            hex.insert(Character(" "), atIndex: advance(advance(hex.startIndex, j),i))
+        
+        for (i,j) in 8.stride(to: hex.utf8.count, by: 8).enumerate() {
+            hex.insert(Character(" "), atIndex: hex.startIndex.advancedBy(i + j))
         }
         return "<\(hex)>"
     }
