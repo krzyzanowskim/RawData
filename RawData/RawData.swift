@@ -201,6 +201,10 @@ extension RawData: Equatable, Hashable {
 }
 
 public func ==(lhs: RawData, rhs: RawData) -> Bool {
+    if lhs.count != rhs.count {
+        return false
+    }
+    
     if lhs.ref.pointer == rhs.ref.pointer {
         return true
     }
@@ -209,7 +213,7 @@ public func ==(lhs: RawData, rhs: RawData) -> Bool {
         return true
     }
     
-    return false
+    return lhs.elf_hash(UInt32(lhs.count)) == rhs.elf_hash(UInt32(rhs.count))
 }
 
 protocol Copying {
